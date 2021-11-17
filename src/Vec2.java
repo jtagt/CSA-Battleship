@@ -1,11 +1,6 @@
 public class Vec2 {
-    private int x;
-    private int y;
-
-    public Vec2() {
-        this.x = 0;
-        this.y = 0;
-    }
+    private final int x;
+    private final int y;
 
     public Vec2(int x, int y) {
         this.x = x;

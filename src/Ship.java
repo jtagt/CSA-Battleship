@@ -1,10 +1,16 @@
 public class Ship {
+    private final Battleship.Ships type;
     private final Vec2 size;
     private Vec2 position;
 
-    public Ship(Vec2 size, Vec2 position) {
-        this.size = size;
+    public Ship(Battleship.Ships type, Vec2 position) {
+        this.type = type;
+        this.size = new Vec2(type.getSize(), 1);
         this.position = position;
+    }
+
+    public Battleship.Ships getType() {
+        return type;
     }
 
     public Vec2 getSize() {

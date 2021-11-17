@@ -1,9 +1,10 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board {
     private final String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     private final Integer[] boardData;
-    private Ship[] ships;
+    private final ArrayList<Ship> ships = new ArrayList<>();
 
 
     public Board(int size) {
@@ -32,15 +33,37 @@ public class Board {
         return position.getX() + (position.getY() * (this.getSize().getX() + 1));
     }
 
-    public int convertLetterToNumber(String letter) {
-        int totalSize = this.getSize().getX() + 1;
+    public Vec2 convertCellToPosition(String cell) {
+        if (cell.length() != 2) return null;
 
-        //if (totalSize)
+        String column = cell.substring(0, 1);
+        String row = cell.substring(1, 2);
+
+        int rowParsed;
+        try {
+            rowParsed = Integer.parseInt(row);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        if (rowParsed > this.getSize().getX()) return null;
+
+        int columnConverted = this.convertLetterToNumber(column);
+        if (columnConverted == -1) return null;
+
+        return new Vec2(columnConverted, rowParsed);
+    }
+
+    private int convertLetterToNumber(String letter) {
+        int totalSize = this.getSize().getX();
 
         for (int i = 0; i < this.alphabet.length; i++) {
             String currentLetter = this.alphabet[i];
 
             if (letter.equalsIgnoreCase(currentLetter)) {
+                if (i > totalSize) { // out of bounds of width
+                    break;
+                }
+
                 return i;
             }
         }
@@ -52,7 +75,46 @@ public class Board {
         return false;
     }
 
-    public String getBoardOutput(Ship[] ships) {
+    public boolean placeShip(Ship ship) {
+        this.ships.add(ship);
+
+        return true;
+    }
+
+    public boolean performAttack(Vec2 position) {
+        int boardSize = this.getSize().getX();
+
+        if (position.getX() > boardSize || position.getY() > boardSize) return false;
+        if (position.getX() < 0 || position.getY() < 0) return false;
+
+        int boardIndex = this.transformCoordinatesToIndex(position);
+        if (this.boardData[boardIndex] != 0) return false;
+
+        this.boardData[boardIndex] = 1;
+        return true;
+    }
+
+    public boolean allShipsDestroyed() {
+        for (Ship ship : this.ships) {
+            Vec2[] bounds = ship.calculateBoundingBox();
+
+            Vec2 lowerBound = bounds[0];
+            Vec2 upperBound = bounds[1];
+
+            for (int upperX = upperBound.getX(); upperX >= lowerBound.getX(); upperX--) {
+                Vec2 position = new Vec2(upperX, ship.getPosition().getY());
+                int boardIndex = this.transformCoordinatesToIndex(position);
+
+               if (this.boardData[boardIndex] != 1) {
+                   return false;
+               }
+            }
+        }
+
+        return true;
+    }
+
+    public String getBoardOutput(boolean showShips) {
         StringBuilder builder = new StringBuilder();
 
         int colCount = 0;
@@ -73,7 +135,7 @@ public class Board {
             }
 
             boolean isShip = false;
-            for (Ship ship : ships) {
+            for (Ship ship : this.ships) {
                 Vec2[] bounds = ship.calculateBoundingBox();
 
                 Vec2 lowerBound = bounds[0];
@@ -84,23 +146,29 @@ public class Board {
                     int replaceIndex = this.transformCoordinatesToIndex(position);
 
                     if (i == replaceIndex) {
-                        isShip = true;
+                        if (this.boardData[i] == 1) {
+                            builder.append(" X ");
+                        } else if (showShips) {
+                            switch (ship.getType()) {
+                                case AIRCRAFT_CARRIER -> builder.append(" A ");
+                                case BATTLESHIP -> builder.append(" B ");
+                                case SUBMARINE -> builder.append(" S ");
+                            }
+                        } else {
+                            builder.append(" _ ");
+                        }
 
-                        builder.append(" = ");
+                        isShip = true;
                     }
                 }
             }
+            if (isShip) continue;
 
-            if (isShip) {
-                continue;
-            }
 
             if (this.boardData[i] == 0) {
-                builder.append(" ~ ");
+                builder.append(" _ ");
             } else if (this.boardData[i] == 1) {
                 builder.append(" O ");
-            } else if (this.boardData[i] == 2) {
-                builder.append(" X ");
             }
         }
 
