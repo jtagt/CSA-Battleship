@@ -1,3 +1,5 @@
+package me.jtagt.battleship;
+
 public class Vec2 {
     private final int x;
     private final int y;

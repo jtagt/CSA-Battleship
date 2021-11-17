@@ -1,3 +1,5 @@
+package me.jtagt.battleship;
+
 public class Ship {
     private final Battleship.Ships type;
     private final Vec2 size;

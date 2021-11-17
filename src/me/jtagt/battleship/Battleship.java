@@ -1,3 +1,5 @@
+package me.jtagt.battleship;
+
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -166,7 +168,5 @@ public class Battleship {
         } else { // impossible
             System.out.println("Not sure how you got here but congrats.");
         }
-
-
     }
 }

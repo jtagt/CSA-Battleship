@@ -1,3 +1,5 @@
+package me.jtagt.battleship;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
