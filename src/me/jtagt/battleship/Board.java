@@ -5,21 +5,67 @@ import java.util.Arrays;
 
 public class Board {
     private final String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-    private final Integer[] boardData;
+
+    private final int[] row0;
+    private final int[] row1;
+    private final int[] row2;
+    private final int[] row3;
+    private final int[] row4;
+    private final int[] row5;
+    private final int[] row6;
+    private final int[] row7;
+    private final int[] row8;
+    private final int[] row9;
+
     private final ArrayList<Ship> ships = new ArrayList<>();
 
 
     public Board(int size) {
         int totalSize = (int) Math.pow(size, 2);
-        this.boardData = new Integer[totalSize];
 
-        Arrays.fill(this.boardData, 0);
+        this.row0 = new int[totalSize];
+        this.row1 = new int[totalSize];
+        this.row2 = new int[totalSize];
+        this.row3 = new int[totalSize];
+        this.row4 = new int[totalSize];
+        this.row5 = new int[totalSize];
+        this.row6 = new int[totalSize];
+        this.row7 = new int[totalSize];
+        this.row8 = new int[totalSize];
+        this.row9 = new int[totalSize];
+
+        Arrays.fill(this.row0, 0);
+        Arrays.fill(this.row1, 0);
+        Arrays.fill(this.row2, 0);
+        Arrays.fill(this.row3, 0);
+        Arrays.fill(this.row4, 0);
+        Arrays.fill(this.row5, 0);
+        Arrays.fill(this.row6, 0);
+        Arrays.fill(this.row7, 0);
+        Arrays.fill(this.row8, 0);
+        Arrays.fill(this.row9, 0);
     }
 
     public Vec2 getSize() {
-        int size = (int) Math.sqrt(this.boardData.length);
+        int size = (int) Math.sqrt(this.row0.length);
 
         return new Vec2(size - 1, size - 1);
+    }
+
+    public int[] getRowArray(Vec2 position) {
+        return switch (position.getX()) {
+            case 0 -> row0;
+            case 1 -> row1;
+            case 2 -> row2;
+            case 3 -> row3;
+            case 4 -> row4;
+            case 5 -> row5;
+            case 6 -> row6;
+            case 7 -> row7;
+            case 8 -> row8;
+            case 9 -> row9;
+            default -> null;
+        };
     }
 
     public Vec2 transformIndexToCoordinates(int index) {
