@@ -21,18 +21,16 @@ public class Board {
 
 
     public Board(int size) {
-        int totalSize = (int) Math.pow(size, 2);
-
-        this.row0 = new int[totalSize];
-        this.row1 = new int[totalSize];
-        this.row2 = new int[totalSize];
-        this.row3 = new int[totalSize];
-        this.row4 = new int[totalSize];
-        this.row5 = new int[totalSize];
-        this.row6 = new int[totalSize];
-        this.row7 = new int[totalSize];
-        this.row8 = new int[totalSize];
-        this.row9 = new int[totalSize];
+        this.row0 = new int[size];
+        this.row1 = new int[size];
+        this.row2 = new int[size];
+        this.row3 = new int[size];
+        this.row4 = new int[size];
+        this.row5 = new int[size];
+        this.row6 = new int[size];
+        this.row7 = new int[size];
+        this.row8 = new int[size];
+        this.row9 = new int[size];
 
         Arrays.fill(this.row0, 0);
         Arrays.fill(this.row1, 0);
@@ -47,9 +45,25 @@ public class Board {
     }
 
     public Vec2 getSize() {
-        int size = (int) Math.sqrt(this.row0.length);
+        int size = this.row0.length;
 
         return new Vec2(size - 1, size - 1);
+    }
+
+    public int[] getRowArray(int number) {
+        return switch (number) {
+            case 0 -> row0;
+            case 1 -> row1;
+            case 2 -> row2;
+            case 3 -> row3;
+            case 4 -> row4;
+            case 5 -> row5;
+            case 6 -> row6;
+            case 7 -> row7;
+            case 8 -> row8;
+            case 9 -> row9;
+            default -> null;
+        };
     }
 
     public int[] getRowArray(Vec2 position) {
@@ -71,14 +85,14 @@ public class Board {
     public Vec2 transformIndexToCoordinates(int index) {
         Vec2 size = this.getSize();
 
-        int y = index / size.getX();
-        int x = index - (y * size.getX());
+        int x = index % (size.getX() + 1);
+        int y = index / (size.getX() + 1);
 
         return new Vec2(x, y);
     }
 
     public int transformCoordinatesToIndex(Vec2 position) {
-        return position.getX() + (position.getY() * (this.getSize().getX() + 1));
+        return position.getY();
     }
 
     public Vec2 convertCellToPosition(String cell) {
@@ -135,10 +149,11 @@ public class Board {
         if (position.getX() > boardSize || position.getY() > boardSize) return false;
         if (position.getX() < 0 || position.getY() < 0) return false;
 
-        int boardIndex = this.transformCoordinatesToIndex(position);
-        if (this.boardData[boardIndex] != 0) return false;
+        int[] row = this.getRowArray(position);
 
-        this.boardData[boardIndex] = 1;
+        if (row[position.getY()] != 0) return false;
+        row[position.getY()] = 1;
+
         return true;
     }
 
@@ -151,9 +166,9 @@ public class Board {
 
             for (int upperX = upperBound.getX(); upperX >= lowerBound.getX(); upperX--) {
                 Vec2 position = new Vec2(upperX, ship.getPosition().getY());
-                int boardIndex = this.transformCoordinatesToIndex(position);
+                int[] row = this.getRowArray(position);
 
-               if (this.boardData[boardIndex] != 1) {
+                if (row[position.getY()] != 1) {
                    return false;
                }
             }
@@ -166,7 +181,7 @@ public class Board {
         StringBuilder builder = new StringBuilder();
 
         int colCount = 0;
-        for (int i = 0; i < this.boardData.length; i++) {
+        for (int i = 0; i < this.row0.length * this.row0.length; i++) { // too lazy to raise to a power
             if (i % (this.getSize().getX() + 1) == 0) {
                 if (i == 0) {
                     for (int x = 0; x < this.getSize().getX() + 1; x++) {
@@ -191,10 +206,12 @@ public class Board {
 
                 for (int upperX = upperBound.getX(); upperX >= lowerBound.getX(); upperX--) {
                     Vec2 position = new Vec2(upperX, ship.getPosition().getY());
-                    int replaceIndex = this.transformCoordinatesToIndex(position);
+                    Vec2 indexToCoordinates = this.transformIndexToCoordinates(i);
 
-                    if (i == replaceIndex) {
-                        if (this.boardData[i] == 1) {
+                    if (position.equals(indexToCoordinates)) {
+                        int[] row = this.getRowArray(position);
+
+                        if (row[position.getY()] == 1) {
                             builder.append(" X ");
                         } else if (showShips) {
                             switch (ship.getType()) {
@@ -212,10 +229,12 @@ public class Board {
             }
             if (isShip) continue;
 
+            Vec2 position = this.transformIndexToCoordinates(i);
+            int[] row = this.getRowArray(position);
 
-            if (this.boardData[i] == 0) {
+            if (row[position.getY()] == 0) {
                 builder.append(" _ ");
-            } else if (this.boardData[i] == 1) {
+            } else if (row[position.getY()] == 1) {
                 builder.append(" O ");
             }
         }

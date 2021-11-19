@@ -3,12 +3,24 @@ package me.jtagt.battleship;
 public class Ship {
     private final Battleship.Ships type;
     private final Vec2 size;
+    private final boolean isVertical;
     private Vec2 position;
 
-    public Ship(Battleship.Ships type, Vec2 position) {
+    public Ship(Battleship.Ships type, Vec2 position, boolean isVertical) {
         this.type = type;
-        this.size = new Vec2(type.getSize(), 1);
+        this.isVertical = isVertical;
+
+        if (isVertical) {
+            this.size = new Vec2(1, type.getSize());
+        } else {
+            this.size = new Vec2(type.getSize(), 1);
+        }
+
         this.position = position;
+    }
+
+    public boolean isVertical() {
+        return isVertical;
     }
 
     public Battleship.Ships getType() {

@@ -25,6 +25,10 @@ public class Vec2 {
         return new Vec2(this.x + vec2.getX(), this.y + vec2.getY());
     }
 
+    public boolean equals(Vec2 vec2) {
+        return vec2.getX() == this.getX() && vec2.getY() == this.getY();
+    }
+
     @Override
     public String toString() {
         return "Vec2{" +

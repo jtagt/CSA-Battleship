@@ -65,7 +65,7 @@ public class Battleship {
         Vec2 aircraftPlacementPosition = playerBoard.convertCellToPosition(aircraftPlacement);
 
         if (aircraftPlacementPosition != null) {
-            boolean placed = playerBoard.placeShip(new Ship(shipType, aircraftPlacementPosition));
+            boolean placed = playerBoard.placeShip(new Ship(shipType, aircraftPlacementPosition, false));
 
             if (placed) {
                 System.out.println("Successfully placed ship.");
@@ -97,7 +97,7 @@ public class Battleship {
         for (Ships ship : Ships.values()) {
             placeShipInput(playerOneBoard, ship);
         }
-
+        
         clearScreen();
 
         System.out.println("Place your ships player two.");
