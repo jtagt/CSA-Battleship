@@ -17,10 +17,6 @@ public class Vec2 {
         return y;
     }
 
-    public Vec2 sub(Vec2 vec2) {
-        return new Vec2(this.x - vec2.getX(), this.y - vec2.getY());
-    }
-
     public Vec2 add(Vec2 vec2) {
         return new Vec2(this.x + vec2.getX(), this.y + vec2.getY());
     }

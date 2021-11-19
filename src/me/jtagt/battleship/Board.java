@@ -50,22 +50,6 @@ public class Board {
         return new Vec2(size - 1, size - 1);
     }
 
-    public int[] getRowArray(int number) {
-        return switch (number) {
-            case 0 -> row0;
-            case 1 -> row1;
-            case 2 -> row2;
-            case 3 -> row3;
-            case 4 -> row4;
-            case 5 -> row5;
-            case 6 -> row6;
-            case 7 -> row7;
-            case 8 -> row8;
-            case 9 -> row9;
-            default -> null;
-        };
-    }
-
     public int[] getRowArray(Vec2 position) {
         return switch (position.getX()) {
             case 0 -> row0;
@@ -89,10 +73,6 @@ public class Board {
         int y = index / (size.getX() + 1);
 
         return new Vec2(x, y);
-    }
-
-    public int transformCoordinatesToIndex(Vec2 position) {
-        return position.getY();
     }
 
     public Vec2 convertCellToPosition(String cell) {
@@ -131,10 +111,6 @@ public class Board {
         }
 
         return -1;
-    }
-
-    public boolean isWithinBounds(Vec2 position, Ship ship) {
-        return false;
     }
 
     public boolean placeShip(Ship ship) {
