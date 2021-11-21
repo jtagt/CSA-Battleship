@@ -1,9 +1,10 @@
 package me.jtagt.battleship;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Scanner;
 
-public class Battleship {
+public class JTIS_Battleship {
     public enum Ships {
         AIRCRAFT_CARRIER("Aircraft Carrier", 5),
         BATTLESHIP("Battleship", 3),
@@ -65,7 +66,10 @@ public class Battleship {
         Vec2 aircraftPlacementPosition = playerBoard.convertCellToPosition(aircraftPlacement);
 
         if (aircraftPlacementPosition != null) {
-            boolean placed = playerBoard.placeShip(new Ship(shipType, aircraftPlacementPosition, false));
+            String orientationPlacement = collectInput("Ship orientation, down (D) or right (R)");
+            boolean vertical = "d".equalsIgnoreCase(orientationPlacement);
+
+            boolean placed = playerBoard.placeShip(new Ship(shipType, aircraftPlacementPosition, vertical));
 
             if (placed) {
                 System.out.println("Successfully placed ship.");
@@ -86,8 +90,11 @@ public class Battleship {
         information();
 
         int currentTurn = 0; // 0 = player one, 1 = player two
-        Board playerOneBoard = new Board(10);
-        Board playerTwoBoard = new Board(10);
+        Board playerOneBoard = new Board("Player one");
+        Board playerTwoBoard = new Board("Player two");
+
+        playerOneBoard.initializeSpaces();
+        playerTwoBoard.initializeSpaces();
 
         /*
         Choose ship placements
@@ -97,7 +104,7 @@ public class Battleship {
         for (Ships ship : Ships.values()) {
             placeShipInput(playerOneBoard, ship);
         }
-        
+
         clearScreen();
 
         System.out.println("Place your ships player two.");
@@ -114,7 +121,7 @@ public class Battleship {
 
         while (!playerOneBoard.allShipsDestroyed() && !playerTwoBoard.allShipsDestroyed()) {
             if (currentTurn == 0) {
-                System.out.println(playerTwoBoard.getBoardOutput(false));
+                System.out.println(playerTwoBoard.printBoard(false));
 
                 String cell = collectInput("Player one please choose a place to hit");
                 Vec2 position = playerTwoBoard.convertCellToPosition(cell);
@@ -127,14 +134,14 @@ public class Battleship {
                 boolean successful = playerTwoBoard.performAttack(position);
                 if (successful) {
                     System.out.println("Successfully attacked.");
-                    System.out.println(playerTwoBoard.getBoardOutput(false));
+                    System.out.println(playerTwoBoard.printBoard(false));
 
                     currentTurn++;
                 } else {
                     System.out.println("Failed to attack.");
                 }
             } else {
-                System.out.println(playerOneBoard.getBoardOutput(false));
+                System.out.println(playerOneBoard.printBoard(false));
 
                 String cell = collectInput("Player two please choose a place to hit");
                 Vec2 position = playerOneBoard.convertCellToPosition(cell);
@@ -147,7 +154,7 @@ public class Battleship {
                 boolean successful = playerOneBoard.performAttack(position);
                 if (successful) {
                     System.out.println("Successfully attacked.");
-                    System.out.println(playerOneBoard.getBoardOutput(false));
+                    System.out.println(playerOneBoard.printBoard(false));
 
                     currentTurn--;
                 } else {
@@ -158,8 +165,8 @@ public class Battleship {
             clearScreen();
         }
 
-        System.out.println(playerOneBoard.getBoardOutput(true));
-        System.out.println(playerTwoBoard.getBoardOutput(true));
+        System.out.println(playerOneBoard.printBoard(true));
+        System.out.println(playerTwoBoard.printBoard(true));
 
         if (playerOneBoard.allShipsDestroyed()) {
             System.out.println("Congratulations player two you have successfully destroyed the opponents ships.");

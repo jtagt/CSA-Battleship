@@ -6,31 +6,42 @@ import java.util.Arrays;
 public class Board {
     private final String[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
-    private final int[] row0;
-    private final int[] row1;
-    private final int[] row2;
-    private final int[] row3;
-    private final int[] row4;
-    private final int[] row5;
-    private final int[] row6;
-    private final int[] row7;
-    private final int[] row8;
-    private final int[] row9;
+    private int[] row0;
+    private int[] row1;
+    private int[] row2;
+    private int[] row3;
+    private int[] row4;
+    private int[] row5;
+    private int[] row6;
+    private int[] row7;
+    private int[] row8;
+    private int[] row9;
 
     private final ArrayList<Ship> ships = new ArrayList<>();
 
+    private final String name; // required for some reason????
+    private boolean showShips; // required for some reason????
 
-    public Board(int size) {
-        this.row0 = new int[size];
-        this.row1 = new int[size];
-        this.row2 = new int[size];
-        this.row3 = new int[size];
-        this.row4 = new int[size];
-        this.row5 = new int[size];
-        this.row6 = new int[size];
-        this.row7 = new int[size];
-        this.row8 = new int[size];
-        this.row9 = new int[size];
+    public Board(String name) {
+        this.name = name; // required for some reason????
+    }
+
+    public Board(String name, boolean showShips) {
+        this.name = name; // required for some reason????
+        this.showShips = showShips; // required for some reason????
+    }
+
+    public void initializeSpaces() {
+        this.row0 = new int[10];
+        this.row1 = new int[10];
+        this.row2 = new int[10];
+        this.row3 = new int[10];
+        this.row4 = new int[10];
+        this.row5 = new int[10];
+        this.row6 = new int[10];
+        this.row7 = new int[10];
+        this.row8 = new int[10];
+        this.row9 = new int[10];
 
         Arrays.fill(this.row0, 0);
         Arrays.fill(this.row1, 0);
@@ -140,20 +151,31 @@ public class Board {
             Vec2 lowerBound = bounds[0];
             Vec2 upperBound = bounds[1];
 
-            for (int upperX = upperBound.getX(); upperX >= lowerBound.getX(); upperX--) {
-                Vec2 position = new Vec2(upperX, ship.getPosition().getY());
-                int[] row = this.getRowArray(position);
+            if (ship.isVertical()) {
+                for (int upperY = upperBound.getX(); upperY >= lowerBound.getX(); upperY--) {
+                    Vec2 position = new Vec2(ship.getPosition().getX(), upperY);
+                    int[] row = this.getRowArray(position);
 
-                if (row[position.getY()] != 1) {
-                   return false;
-               }
+                    if (row[position.getX()] != 1) {
+                        return false;
+                    }
+                }
+            } else {
+                for (int upperX = upperBound.getX(); upperX >= lowerBound.getX(); upperX--) {
+                    Vec2 position = new Vec2(upperX, ship.getPosition().getY());
+                    int[] row = this.getRowArray(position);
+
+                    if (row[position.getY()] != 1) {
+                        return false;
+                    }
+                }
             }
         }
 
         return true;
     }
 
-    public String getBoardOutput(boolean showShips) {
+    public String printBoard(boolean showShips) {
         StringBuilder builder = new StringBuilder();
 
         int colCount = 0;
@@ -180,26 +202,50 @@ public class Board {
                 Vec2 lowerBound = bounds[0];
                 Vec2 upperBound = bounds[1];
 
-                for (int upperX = upperBound.getX(); upperX >= lowerBound.getX(); upperX--) {
-                    Vec2 position = new Vec2(upperX, ship.getPosition().getY());
-                    Vec2 indexToCoordinates = this.transformIndexToCoordinates(i);
+                Vec2 indexToCoordinates = this.transformIndexToCoordinates(i);
+                if (ship.isVertical()) {
+                    for (int upperY = upperBound.getY(); upperY >= lowerBound.getY(); upperY--) {
+                        Vec2 position = new Vec2(ship.getPosition().getX(), upperY);
 
-                    if (position.equals(indexToCoordinates)) {
-                        int[] row = this.getRowArray(position);
+                        if (position.equals(indexToCoordinates)) {
+                            int[] row = this.getRowArray(position);
 
-                        if (row[position.getY()] == 1) {
-                            builder.append(" X ");
-                        } else if (showShips) {
-                            switch (ship.getType()) {
-                                case AIRCRAFT_CARRIER -> builder.append(" A ");
-                                case BATTLESHIP -> builder.append(" B ");
-                                case SUBMARINE -> builder.append(" S ");
+                            if (row[position.getY()] == 1) {
+                                builder.append(" X ");
+                            } else if (showShips) {
+                                switch (ship.getType()) {
+                                    case AIRCRAFT_CARRIER -> builder.append(" A ");
+                                    case BATTLESHIP -> builder.append(" B ");
+                                    case SUBMARINE -> builder.append(" S ");
+                                }
+                            } else {
+                                builder.append(" _ ");
                             }
-                        } else {
-                            builder.append(" _ ");
-                        }
 
-                        isShip = true;
+                            isShip = true;
+                        }
+                    }
+                } else {
+                    for (int upperX = upperBound.getX(); upperX >= lowerBound.getX(); upperX--) {
+                        Vec2 position = new Vec2(upperX, ship.getPosition().getY());
+
+                        if (position.equals(indexToCoordinates)) {
+                            int[] row = this.getRowArray(position);
+
+                            if (row[position.getY()] == 1) {
+                                builder.append(" X ");
+                            } else if (showShips) {
+                                switch (ship.getType()) {
+                                    case AIRCRAFT_CARRIER -> builder.append(" A ");
+                                    case BATTLESHIP -> builder.append(" B ");
+                                    case SUBMARINE -> builder.append(" S ");
+                                }
+                            } else {
+                                builder.append(" _ ");
+                            }
+
+                            isShip = true;
+                        }
                     }
                 }
             }
